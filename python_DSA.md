@@ -331,34 +331,7 @@ class Tree():
 
 **并查集 Disjoint Set**
 
-[OpenJudge - 02524:宗教信仰](http://cs101.openjudge.cn/practice/02524/)
-
-```python
-def find(x):
-    if parent[x] != x:
-        parent[x] = find(parent[x])
-    return parent[x]
-
-def union(x, y):
-    x = find(x)
-    y = find(y)
-    parent[x] = y
-
-case = 0
-while True:
-    case += 1
-    n, m = map(int, input().split())
-    if n == 0:
-        break
-    parent = [i for i in range(n + 1)]
-    for _ in range(m):
-        x, y = map(int, input().split())
-        union(x, y)
-    for i in range(1, n + 1):
-        find(i)
-    parent_set = set(parent)
-    print(f"Case {case}: {len(parent_set) - 1}")
-```
+见后
 
 ## Graph
 
@@ -426,7 +399,7 @@ def topological_sort(graph : Dict[str : List[str]]):
       dist[source] = 0
       in_queue = [False] * V # 初始化入队状态
       in_queue[source] = True
-      count = [0] * V # 初始化松弛次数
+      cnt = [0] * V # 初始化松弛次数
       queue = deque([source])
       while queue:
           u = queue.popleft()
@@ -437,8 +410,8 @@ def topological_sort(graph : Dict[str : List[str]]):
                   if in_queue[v] == False:
                       queue.append(v)
                       in_queue[v] = True
-                      count[v] += 1
-                      if count[v] > V:
+                      cnt[v] += 1
+                      if cnt[v] > V:
                           print("图中存在负权环")
                           return None
       return dist
@@ -448,7 +421,7 @@ def topological_sort(graph : Dict[str : List[str]]):
   print(spfa(agj, V, source))
   ```
 
-- **Floyd-Warshall **$O(V^3)$
+- **Floyd-Warshall **$O(V^3)$, 类似dp, 
 
   ```python
   def floyd_warshall(graph : Dict):
@@ -490,7 +463,9 @@ def topological_sort(graph : Dict[str : List[str]]):
       return tot
   ```
 
-- ```python
+- **Kruskal**, $O(E\log E)$
+  
+  ```python
   class DisjointSet:
       def __init__(self, num_vertices):
           self.parent = list(range(num_vertices))
@@ -520,13 +495,13 @@ def topological_sort(graph : Dict[str : List[str]]):
                   edges.append((i, j, graph[i][j]))    
       edges.sort(key=lambda x: x[2]) # 按照权重排序
       disjoint_set = DisjointSet(num_vertices) # 初始化并查集
-      minimum_spanning_tree = [] # 构建最小生成树的边集
+      MST = [] # 构建最小生成树的边集
       for edge in edges:
           u, v, weight = edge
           if disjoint_set.find(u) != disjoint_set.find(v):
               disjoint_set.union(u, v)
-              minimum_spanning_tree.append((u, v, weight))
-      return minimum_spanning_tree
+              MST.append((u, v, weight))
+      return MST
   ```
 
 ---------
