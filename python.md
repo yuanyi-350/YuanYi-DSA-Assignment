@@ -41,27 +41,34 @@
 
 - 输入整数 `n = int(input())`, 默认输入为字符串,需转为整数
 
-- 输入多个整数 `m , n = map(int, input().split())`	( `split()`按空格将字符分段 )
+  输入多个整数 `m , n = map(int, input().split())`	( `split()`按空格将字符分段 )
 
-- 输入数组 `num = list(map(int, input().split()))`
+  输入数组 `num = list(map(int, input().split()))`
 
-- f-string 输出 `print(f"The answer is {m} {n}")`
+- f-string 
 
-- 数组输出 `print(' '.join(map(str, num)))` 或者 `print(*num, sep=' ')`
+  输出 `print(f"The answer is {m} {n}")`
+
+  保留两位小数 `result = f"{num:.2f}"`
+
+  ```python
+  name = "Alice"
+  print(f"{name:<10}") # Left align (width 10) : "Alice     "
+  print(f"{name:>10}") # Right align (width 10): "     Alice"
+  ```
+
+- `str` 转为 `chr` 数组`s_list = list(s)`
+
+- 将`str`数组连接成`str` `print(''.join(s_list))`
+
+  数组输出 `print(' '.join(map(str, num)))` 或者 `print(*num, sep=' ')`
 
 - 无换行输出 `print(n, end = '')`
-
-- 保留两位小数 `result = f"{num:.2f}"`
 
 - 输入字符串`s = input()`
 
 
-- 转为char数组`s_list = list(s)`
-
-- 输出char数组`print(''.join(s_list))`
-
 - 无穷大和无穷小 :  `float("inf")` 和 `float("-inf")`
-
 - ASCII 码 `ord("A")` 和 `chr(65)`
 
 

@@ -12,8 +12,7 @@
 class Solution(object):
     def lengthOfLongestSubstring(self, s):
         if not s: return 0
-        left = 0
-        MAX = 1
+        left, MAX = 0, 1
         pos_val = {}
         for right, c in enumerate(s):
             if s[right] in pos_val and pos_val[s[right]] >= left:
@@ -26,7 +25,7 @@ class Solution(object):
 
 #### 双指针 : 
 
-##### [11. 盛最多水的容器 - 力扣（LeetCode）](https://leetcode.cn/problems/container-with-most-water/description/?envType=study-plan-v2&envId=top-100-liked)
+##### [*11. 盛最多水的容器 - 力扣（LeetCode）](https://leetcode.cn/problems/container-with-most-water/description/?envType=study-plan-v2&envId=top-100-liked)
 
 ``` python
 class Solution(object):
@@ -49,35 +48,19 @@ class Solution(object):
 
 #### 单调栈 :
 
-##### [739. 每日温度 - 力扣（LeetCode）](https://leetcode.cn/problems/daily-temperatures/?envType=problem-list-v2&envId=monotonic-stack)
-
-``` python
-class Solution(object):
-    def dailyTemperatures(self, temperatures):
-        st = []
-        res = [0] * len(temperatures)
-        for i, t in enumerate(temperatures):
-            if not st:
-                st.append(i)
-            else:
-                while st and temperatures[st[-1]] < t:
-                    res[st[-1]] = i - st[-1]
-                    st.pop()
-                st.append(i)
-        return res
-```
+##### 下一个更大（或更小）元素 : [84. 柱状图中最大的矩形 - 力扣（LeetCode）](https://leetcode.cn/problems/largest-rectangle-in-histogram/description/)
 
 ##### [84. 柱状图中最大的矩形 - 力扣（LeetCode）](https://leetcode.cn/problems/largest-rectangle-in-histogram/description/?envType=study-plan-v2&envId=top-100-liked)
 
-Key : 如何遍历?
+例如 `[3, 1, 4, 1, 5, 9, 2, 6]`
 
-Solution : 例如 `[3, 1, 4, 1, 5, 9, 2, 6]`
+`[3]` => `[1]` => `[1,4]` ===>== `[1]` => `[1,5]` =>  `[1,5,9]` =>`[1,2]` => `[1,2,6]`
 
-`[3]` => `[1]` => `[1,4]` => `[1]` => `[1,5]` =>  `[1,5,9]` <font : color = red>=></font> `[1,2]` => `[1,2,6]`
+例如其中 `pop 4` 时, 会计算以 `4` 为右边界矩形 (`4`为矩形高度, `4`为矩形最右侧一列) 的最大面积.
 
-其中红色的一步, 每次枚举最右侧是 9 的矩形 (`[9]`, `[5,9]`)  (不会枚举 `[1,5,9]`, 因为 `[4,9,2,...]` 之后会枚举到的)
+其中在 `height` 末尾加 `0` 是为了保证最后把 `[1,2,6]` 完整的`pop` 一遍
 
-其中在 `height` 末尾加 `0` 是为了保证最后把 `[1,2,6]` 完整的枚举一遍 (`[6]`, `[2,6]`, `[1,5,9,2,6]`)
+例如 `pop 2` 时计算以 `2` 为右边界矩形 (`2`为矩形高度, `2`为矩形最右侧一列) 的最大面积, 即 `[5, 9, 2]` 三列组成的矩形
 
 ```python
 class Solution(object):
@@ -88,7 +71,7 @@ class Solution(object):
         for i in range(len(heights)):
             while st and heights[st[-1]] > heights[i]:
                 h = heights[st.pop()]
-                w = i if not st else i - st[-1] - 1
+                w = i if not st else i - st[-1] - 1 # st 为空表明 heights[i] 是目前最小的
                 MAX = max(MAX, h * w)
             st.append(i)
         return MAX
@@ -124,6 +107,10 @@ class Solution(object):
 
 #### 单调队列 : 
 
+例如 `nums = [1,3,-1,-3,5,3,6,7], k = 3`
+
+ `[1]` => `[3]` => `[3, -1]` => `[3, -1, -3]` => `[5]` => `[5, 3]` => `[6]` => `[7]`
+
 ##### [239. 滑动窗口最大值 - 力扣（LeetCode）](https://leetcode.cn/problems/sliding-window-maximum/description/?envType=study-plan-v2&envId=top-100-liked)
 
 ```python
@@ -148,8 +135,6 @@ class Solution(object):
 
 ##### [中序表达式转后序表达式](http://cs101.openjudge.cn/practice/24591/)
 
-以下是 Shunting Yard 算法的基本步骤：
-
 1. 初始化运算符栈和输出栈为空. 
 2. 从左到右遍历中缀表达式的每个符号. 
    - 如果是操作数(数字), 则将其添加到输出栈. 
@@ -165,8 +150,8 @@ class Solution(object):
 ```python
 opr_pri = {"+" : 1, "-" : 1, "*" : 2, "/" : 2, "(" : 3, ")" : 3}
 
-def find_num(s : str, i : int) -> int:
-    # e.g. find_num("1.0+2.5", 0) = 3
+def find_num(s : str, i : int) -> int: # e.g. find_num("1.0+2.5", 0) = 3
+    
     while i < len(s) and s[i] not in opr_pri:
         i += 1
     return i
@@ -183,7 +168,8 @@ def trans() -> list:
                     res.append(opr_st.pop())
                 opr_st.pop()
             else:
-                while opr_st and opr_st[-1] != "(" and opr_pri[s[i]] <= opr_pri[opr_st[-1]]:
+                while opr_st and opr_st[-1] != "(" and\
+                	opr_pri[s[i]] <= opr_pri[opr_st[-1]]:
                     res.append(opr_st.pop())
                 opr_st.append(s[i])
             i += 1
@@ -199,6 +185,29 @@ n = int(input())
 
 for _ in range(n):
     print(*trans(), sep = " ")
+```
+
+##### [后序表达式求值](http://cs101.openjudge.cn/practice/24588/)
+
+```python
+def calc(expr : list) -> float:
+    num = []
+    for c in expr:
+        if c not in {"*", "/", "+", "-"} :
+            num.append(float(c))
+        else :
+            b = num.pop()
+            a = num.pop()
+            if c == "+" : num.append(a + b)
+            elif c == "-" : num.append(a - b)
+            elif c == "*" : num.append(a * b)
+            elif c == "/" : num.append(a / b)
+    return f"{num[0]:.2f}"
+
+n = int(input())
+for i in range(n):
+    expr = list(input().split())
+    print(calc(expr))
 ```
 
 ## 排序
@@ -331,7 +340,17 @@ class Tree():
 
 **并查集 Disjoint Set**
 
-见后
+- 常规版见后Kruskal
+
+- 变种 : 以[食物链 ](http://cs101.openjudge.cn/practice/01182)为例 (类似的, [发现它，抓住它](http://cs101.openjudge.cn/25dsapre/01703/) 也可以看成一种食物链)
+
+  我们构建 `parent` 为长度 $3n$ 的 `list`
+
+  如果 `a`, `b` 同类, 则将 `a, b` 分支合并, `a + n, b + n` 分支合并, `a + 2 * n, b + 2 * n` 分支合并
+
+  如果 `a` 吃 `b` , 则将 `a, b + n` 分支合并, `a + n, b + 2 * n` 分支合并, `a + 2 * n, b` 分支合并
+
+  如果 `a` 被 `b` 吃, 则将 `a, b + 2 * n` 分支合并, `a + n, b` 分支合并, `a + 2 * n, b` 分支合并
 
 ## Graph
 
@@ -503,6 +522,32 @@ def topological_sort(graph : Dict[str : List[str]]):
               MST.append((u, v, weight))
       return MST
   ```
+
+## KMP模式匹配
+
+首先 define **真前缀 (proper prefix)** 和 **真后缀(proper suffix)**
+
+例如 `ABCD` 的真前缀为集合 `{"", A", "AB", "ABC"}` , 真后缀为 `{"", D", "CD", "BCD"}`
+
+对于 `pattern`  构造 `lps` 表, 其中 `lps[i]` 表示 `pattern[:i]` 真前缀与真后缀交集的最大长度
+
+```python
+def compute_lps(pattern): # pattern: 模式字符串
+    m = len(pattern)
+    lps = [0] * m  # 初始化lps数组
+    length = 0  # 当前最长前后缀长度
+    for i in range(1, m):  # 注意i从1开始，lps[0]永远是0
+        while length > 0 and pattern[i] != pattern[length]:
+            length = lps[length - 1]  # 回退到上一个有效前后缀长度
+        if pattern[i] == pattern[length]:
+            length += 1
+        lps[i] = length
+    return lps
+```
+
+
+
+
 
 ---------
 
