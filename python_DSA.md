@@ -135,40 +135,34 @@ class Solution(object):
 
 ##### [中序表达式转后序表达式](http://cs101.openjudge.cn/practice/24591/)
 
-1. 初始化运算符栈和输出栈为空. 
-2. 从左到右遍历中缀表达式的每个符号. 
-   - 如果是操作数(数字), 则将其添加到输出栈. 
-   - 如果是左括号, 则将其推入运算符栈. 
-   - 如果是运算符：
-     - 如果运算符的优先级大于运算符栈顶的运算符, 或者运算符栈顶是左括号, 则将当前运算符推入运算符栈. 
-     - 否则, 将运算符栈顶的运算符弹出并添加到输出栈中, 直到满足上述条件(或者运算符栈为空). 
-     - 将当前运算符推入运算符栈. 
-   - 如果是右括号, 则将运算符栈顶的运算符弹出并添加到输出栈中, 直到遇到左括号. 将左括号弹出但不添加到输出栈中. 
-3. 如果还有剩余的运算符在运算符栈中, 将它们依次弹出并添加到输出栈中. 
-4. 输出栈中的元素就是转换后的后缀表达式. 
-
 ```python
 opr_pri = {"+" : 1, "-" : 1, "*" : 2, "/" : 2, "(" : 3, ")" : 3}
 
 def infix_to_postfix_list(tokens: list[int | str]) -> list[int | str]:
-    # e.g. ["(", 2, "+", 6, "/", 3 , ")", "*", 4] -> [2, 6, 3, '/', '+', 4, '*']
-    res, opr_st = [], []
+# e.g. ["(", 2, "+", 6, "/", 3 , ")", "*", 4] -> [2, 6, 3, '/', '+', 4, '*']
+    res, opr_st = [], [] # 初始化运算符栈和输出栈为空
     for tok in tokens:
-        if tok == "(":
+        if tok == "(": # 如果是左括号, 则将其推入运算符栈. 
                 opr_st.append("(")
-        elif tok == ")":
-            while opr_st and opr_st[-1] != "(":
-                res.append(opr_st.pop())
-            opr_st.pop()
-        elif tok in opr_pri:
-            while opr_st and opr_st[-1] != "(" and \
+        
+        elif tok == ")": # 如果是右括号
+            while opr_st and opr_st[-1] != "(": 
+                res.append(opr_st.pop()) 
+                # 则将运算符栈顶的运算符弹出并添加到输出栈中, 直到遇到左括号. 
+            opr_st.pop() #将左括号弹出但不添加到输出栈中. 
+        
+    	elif tok in opr_pri: # 如果是运算符
+            while opr_st and opr_st[-1] != "(" and \ 
                 opr_pri[tok] <= opr_pri[opr_st[-1]]:
-                res.append(opr_st.pop())
-            opr_st.append(tok)
-        else:
+                res.append(opr_st.pop()) 
+                # 不断将运算符栈顶的运算符弹出并添加到输出栈中, 
+                # 直到运算符的优先级大于运算符栈顶的运算符, 或者运算符栈顶是左括号
+            opr_st.append(tok) # 则将当前运算符推入运算符栈
+        
+    	else: # 如果是操作数(数字), 则将其添加到输出栈. 
             res.append(tok)
     while opr_st:
-        res.append(opr_st.pop())
+        res.append(opr_st.pop()) # 输出栈中的元素就是转换后的后缀表达式. 
     return res
 ```
 
@@ -229,7 +223,7 @@ def sortArray(nums):
 
 ## Linked List
 
-##### 引用与赋值
+#### 引用与赋值
 
 ```python
 # 定义链表节点类
@@ -247,49 +241,49 @@ a = ListNode(1, b)
 ```
 
 1. ```python
-   # Example 1 : `prev` 和 `curr` 指向相同的节点, 修改 `prev` 后 `curr` 不受影响
+   # Example 1 : `prev` 和 `cur` 指向相同的节点, 修改 `prev` 后 `cur` 不受影响
    prev = a
-   curr = prev
+   cur = prev
    prev = b
-   print(curr == a, a) # output : True ListNode(1 -> 2)
+   print(cur == a, a) # output : True ListNode(1 -> 2)
    ```
 
 2. ```python
-   # Example 2 : `curr` 指向 `a.next` (i.e. `b`), 修改 `prev` 后 `curr` 不受影响
+   # Example 2 : `cur` 指向 `a.next` (i.e. `b`), 修改 `prev` 后 `cur` 不受影响
    prev = a
-   curr = prev.next
+   cur = prev.next
    prev = c
-   print(curr == b, b) # output : True ListNode(2 -> 3)
+   print(cur == b, b) # output : True ListNode(2 -> 3)
    ```
 
 3. ```python
-   # Example 3 : `curr` 指向 `a`, 修改 `a.val`, `curr.val` 也受影响
-   curr = a
+   # Example 3 : `cur` 指向 `a`, 修改 `a.val`, `cur.val` 也受影响
+   cur = a
    a.val = 0
-   print(curr) # output : ListNode(0 -> 2)
+   print(cur) # output : ListNode(0 -> 2)
    ```
 
 4. ```python
-   # Example 4 : `prev` 和 `curr` 指向相同对象 `a`, 修改 `prev.val`, `curr.val` 也受影响
+   # Example 4 : `prev` 和 `cur` 指向相同对象 `a`, 修改 `prev.val`, `cur.val` 也受影响
    prev = a
-   curr = a
+   cur = a
    prev.val = 0
-   print(curr) # output : ListNode(0 -> 2)
+   print(cur) # output : ListNode(0 -> 2)
    ```
 
 5. ```python
-   # Example 5 : `curr` 指向 `a`, 修改 `a.next`, `curr.next` 也受影响
+   # Example 5 : `cur` 指向 `a`, 修改 `a.next`, `cur.next` 也受影响
    prev = a
-   curr = prev
+   cur = prev
    prev.next = c
-   print(curr) # output : ListNode(0 -> 3)
+   print(cur) # output : ListNode(0 -> 3)
    ```
 
 引用变更不会同步, 赋值变更 ( `prev.next = ...` 或者 `prev.val = ...`) 会同步
 
+6. **`p.next` 需要提前检查`if not p`**
 
-
-[206. 反转链表 - 力扣（LeetCode）](https://leetcode.cn/problems/reverse-linked-list/description/)
+##### [206. 反转链表 - 力扣（LeetCode）](https://leetcode.cn/problems/reverse-linked-list/description/)
 
 ```python
 class ListNode:
@@ -300,12 +294,12 @@ class ListNode:
 class Solution(object):
     def reverseList(self, head):
         pre = None
-        curr = head
-        while curr:
-            curr_next = curr.next
-            curr.next = pre
-            pre = curr
-            curr = curr_next
+        cur = head
+        while cur:
+            cur_next = cur.next
+            cur.next = pre
+            pre = cur
+            cur = cur_next
         return pre
 ```
 
@@ -323,7 +317,7 @@ class Tree():
 
 此略
 
-**并查集 Disjoint Set**
+#### 并查集 Disjoint Set
 
 - 常规版见后Kruskal
 
@@ -331,7 +325,7 @@ class Tree():
 
   我们构建 `parent` 为长度 $3n$ 的 `list`
 
-  如果 `a`, `b` 同类, 则将 `a, b` 分支合并, `a + n, b + n` 分支合并, `a + 2 * n, b + 2 * n` 分支合并
+  如果 `a`, `b` 同类, 则将 `a, b` 分支合并, `a + n, b + n` 合并, `a + 2 * n, b + 2 * n` 分支合并
 
   如果 `a` 吃 `b` , 则将 `a, b + n` 分支合并, `a + n, b + 2 * n` 分支合并, `a + 2 * n, b` 分支合并
 
@@ -339,7 +333,7 @@ class Tree():
 
 ## Graph
 
-##### 拓扑排序 (可用于判断有向图中有无环)
+#### 拓扑排序 (可用于判断有向图中有无环)
 
 Kahn, 时间复杂度 $O(V + E)$
 
@@ -366,7 +360,33 @@ def topological_sort(graph : Dict[str : List[str]]):
         return None # have a cycle
 ```
 
-##### 最短路径
+DFS, 时间复杂度 $O(V + E)$
+
+```python
+def toposort(graph: list[list[int]]) -> list[int] | None:
+    vis, curr, topo_order, cycle = set(), set(), [], False
+
+    def dfs(node: int) -> None:
+        nonlocal cycle
+        if node in curr:
+            cycle = True
+        if cycle or node in vis:
+            return
+        vis.add(node)
+        curr.add(node)
+        for neighbor in graph[node]:
+            dfs(neighbor)
+        curr.remove(node) # 将由 node 可达的节点探索完后加入 node
+        topo_order.append(node)
+
+    for u in range(len(graph)):
+        if u not in vis:
+            dfs(u)
+
+    return None if cycle else topo_order[::-1]
+```
+
+#### 最短路径
 
 - **Dijkstra**
 
@@ -425,7 +445,7 @@ def topological_sort(graph : Dict[str : List[str]]):
   print(spfa(agj, V, source))
   ```
 
-- **Floyd-Warshall **$O(V^3)$, 类似dp, 
+- **Floyd-Warshall **$O(V^3)$, 类似dp
 
   ```python
   def floyd_warshall(graph : Dict):
@@ -444,7 +464,7 @@ def topological_sort(graph : Dict[str : List[str]]):
       return dis
   ```
 
-##### 最小生成树
+#### 最小生成树
 
 - **Prim**, $O(V^2)$, 适用于稠密图
 
@@ -508,6 +528,49 @@ def topological_sort(graph : Dict[str : List[str]]):
       return MST
   ```
 
+#### 启发式搜索( Warnsdorff )
+
+##### [OpenJudge - 28050:骑士周游](http://cs101.openjudge.cn/practice/28050/)
+
+```python
+dir = [(2, 1), (1, 2), (-1, 2), (-2, 1),
+       (-2, -1), (-1, -2), (1, -2), (2, -1)]
+
+def isValid(r, c):
+    return 0 <= r < n and 0 <= c < n
+
+def knight_tour(n, sr, sc):
+    board = [[-1]*n for _ in range(n)]
+    board[sr][sc] = 0
+    def dfs(step, r, c):
+        if step == n*n - 1:
+            return True
+        candidates = []
+        for dr, dc in dir:
+            nr, nc = r + dr, c + dc
+            if isValid(nr, nc) and board[nr][nc] == -1:
+                cnt = 0
+                for dr2, dc2 in dir:
+                    tr, tc = nr + dr2, nc + dc2
+                    if isValid(tr, tc) and board[tr][tc] == -1:
+                        cnt += 1
+                candidates.append((cnt, nr, nc))
+        candidates.sort()
+        for _, nr, nc in candidates:
+            board[nr][nc] = step + 1
+            if dfs(step + 1, nr, nc):
+                return True
+            board[nr][nc] = -1
+        return False
+    return dfs(0, sr, sc)
+
+n = int(input())
+sr, sc = map(int, input().split())
+print("success" if knight_tour(n, sr, sc) else "fail")
+```
+
+
+
 ## KMP模式匹配
 
 首先 define **真前缀 (proper prefix)** 和 **真后缀(proper suffix)**
@@ -532,9 +595,31 @@ def compute_lps(pattern): # pattern: 模式字符串
 
 
 
+```python
+def kmp_search(text, pattern): # 在 text 中查找 pattern
+    n = len(text)
+    m = len(pattern)
+    if m == 0:
+        return 0
+    lps = compute_lps(pattern)
+    matches = []
+    j = 0  # 模式串指针
+    for i in range(n):  # 主串指针
+        while j > 0 and text[i] != pattern[j]:
+            j = lps[j - 1]  # 模式串回退
+        if text[i] == pattern[j]:
+            j += 1
+        if j == m:
+            matches.append(i - j + 1)  # 匹配成功
+            j = lps[j - 1]  # 查找下一个匹配
+    return matches
+```
+
 
 
 ---------
 
 ##### 强连通 <mark>sorry</mark>
+
+---
 

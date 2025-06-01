@@ -143,3 +143,22 @@ res = zip(list1, list2)
 print(list(res)) # output : [(1, 'a'), (2, 'b'), (3, 'c')]
 ```
 
+
+
+## LRU_Cache
+
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=None)  # maxsize=None 表示缓存不设上限
+def fibonacci(n):
+    """
+    计算第 n 个斐波那契数（假设 fibonacci(0) = 0, fibonacci(1) = 1）。
+    使用 lru_cache 自动缓存，避免重复计算。
+    """
+    if n < 2:  
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+```
+
+其中要求参数的可哈希性（hashability）(例如：整数、字符串、元组)

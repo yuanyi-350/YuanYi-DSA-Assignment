@@ -69,6 +69,9 @@
 
 
 - 无穷大和无穷小 :  `float("inf")` 和 `float("-inf")`
+
+  或者 `from math import inf`
+
 - ASCII 码 `ord("A")` 和 `chr(65)`
 
 
@@ -157,10 +160,13 @@ for i in range(10, 0, -2):
 
 ##### 切片
 
+规则同 `range` 的三个参数, 分别为 `start`, `end`, `step`
+
 ```python
 l = ['I','l','o','v','e','p','y','t','h','o','n']
 print(l[3:])# print the 3th~the last element : ['v', 'e', 'p', 'y', 't', 'h', 'o', 'n']
 print(l[-1])# print the last element : n
+print(l[::2])  # output : ['I', 'o', 'e', 'y', 'h', 'n']
 ```
 
 ##### 遍历
