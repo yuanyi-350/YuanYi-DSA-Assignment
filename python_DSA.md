@@ -111,7 +111,7 @@ class Solution(object):
 
  `[1]` => `[3]` => `[3, -1]` => `[3, -1, -3]` => `[5]` => `[5, 3]` => `[6]` => `[7]`
 
-##### [239. 滑动窗口最大值 - 力扣（LeetCode）](https://leetcode.cn/problems/sliding-window-maximum/description/?envType=study-plan-v2&envId=top-100-liked)
+##### [239. 滑动窗口最大值 - 力扣（LeetCode）](https://leetcode.cn/problems/sliding-window-maximum/description/?envType=study-plan-v2&envId=top-100-liked) (也可以heap + 懒删除)
 
 ```python
 from collections import deque
@@ -150,64 +150,49 @@ class Solution(object):
 ```python
 opr_pri = {"+" : 1, "-" : 1, "*" : 2, "/" : 2, "(" : 3, ")" : 3}
 
-def find_num(s : str, i : int) -> int: # e.g. find_num("1.0+2.5", 0) = 3
-    
-    while i < len(s) and s[i] not in opr_pri:
-        i += 1
-    return i
-
-def trans() -> list:
-    s, i = input(), 0
+def infix_to_postfix_list(tokens: list[int | str]) -> list[int | str]:
+    # e.g. ["(", 2, "+", 6, "/", 3 , ")", "*", 4] -> [2, 6, 3, '/', '+', 4, '*']
     res, opr_st = [], []
-    while i < len(s):
-        if s[i] in opr_pri:
-            if s[i] == "(":
-                opr_st.append(s[i])
-            elif s[i] == ")":
-                while opr_st and opr_st[-1] != "(":
-                    res.append(opr_st.pop())
-                opr_st.pop()
-            else:
-                while opr_st and opr_st[-1] != "(" and\
-                	opr_pri[s[i]] <= opr_pri[opr_st[-1]]:
-                    res.append(opr_st.pop())
-                opr_st.append(s[i])
-            i += 1
+    for tok in tokens:
+        if tok == "(":
+                opr_st.append("(")
+        elif tok == ")":
+            while opr_st and opr_st[-1] != "(":
+                res.append(opr_st.pop())
+            opr_st.pop()
+        elif tok in opr_pri:
+            while opr_st and opr_st[-1] != "(" and \
+                opr_pri[tok] <= opr_pri[opr_st[-1]]:
+                res.append(opr_st.pop())
+            opr_st.append(tok)
         else:
-            j = find_num(s, i)
-            res.append(s[i : j])
-            i = j
+            res.append(tok)
     while opr_st:
         res.append(opr_st.pop())
     return res
-
-n = int(input())
-
-for _ in range(n):
-    print(*trans(), sep = " ")
 ```
 
-##### [后序表达式求值](http://cs101.openjudge.cn/practice/24588/)
+##### [LCR 036. 逆波兰表达式求值 - 力扣（LeetCode）](https://leetcode.cn/problems/8Zf90G/description/)
 
 ```python
-def calc(expr : list) -> float:
-    num = []
-    for c in expr:
-        if c not in {"*", "/", "+", "-"} :
-            num.append(float(c))
-        else :
-            b = num.pop()
-            a = num.pop()
-            if c == "+" : num.append(a + b)
-            elif c == "-" : num.append(a - b)
-            elif c == "*" : num.append(a * b)
-            elif c == "/" : num.append(a / b)
-    return f"{num[0]:.2f}"
-
-n = int(input())
-for i in range(n):
-    expr = list(input().split())
-    print(calc(expr))
+class Solution:
+    def evalRPN(self, tokens: List[str]) -> int:
+        num = []
+        for token in tokens:
+            if token not in {"*", "/", "+", "-"}:
+                num.append(int(c))
+            else:
+                b = num.pop()
+                a = num.pop()
+                if token == "+":
+                    num.append(a + b)
+                elif token == "-":
+                    num.append(a - b)
+                elif token == "*":
+                    num.append(a * b)
+                else:
+                    num.append(int(a / b))
+        return num[0]
 ```
 
 ## 排序

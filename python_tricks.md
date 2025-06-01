@@ -117,16 +117,14 @@
 
    ```python
    nums = [1, 2, 3, 4, 5]
-   res = sum(nums)
-   print(res) # output : 15
+   print(sum(nums)) # output : 15
    ```
-
+   
 2. 合并 `list`
 
    ```python
    list_of_lists = [[1, 2], [3, 4], [5, 6]]
-   result = sum(list_of_lists, [])
-   print(result) # output : [1, 2, 3, 4, 5, 6]
+   print(sum(list_of_lists, [])) # output : [1, 2, 3, 4, 5, 6]
    ```
 
 `zip` 的用法
