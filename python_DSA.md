@@ -333,9 +333,48 @@ class Tree():
 
 ## Graph
 
+#### DFS / BFS
+
+##### 判断无向图有无环
+
+```python
+def has_cycle_dfs(n, graph):
+    visited = [False] * n
+    def dfs(u, parent):
+        for w in graph[u]:
+            if not visited[w]:
+                if dfs(w, u):
+                    return True
+            elif w != parent:
+                return True
+    for u in range(n):
+        if not visited[u]:
+            if dfs(u, -1):
+                return True
+    return False
+```
+
+```python
+def has_cycle_bfs(n, graph):
+    visited, parent = [False] * n, [-1] * n
+    for u in range(n):
+        if not visited[u]:
+            visited[u], parent[u] = True, -1
+            que = deque([u])
+            while que:
+                cur = que.popleft()
+                for w in graph[cur]:
+                    if not visited[w]:
+                        visited[w], parent[w] = True, cur
+                        que.append(w)
+                    elif w != parent[cur]:
+                        return True
+    return False
+```
+
 #### 拓扑排序 (可用于判断有向图中有无环)
 
-Kahn, 时间复杂度 $O(V + E)$
+##### Kahn, 时间复杂度 $O(V + E)$
 
 ```python
 def topological_sort(graph : Dict[str : List[str]]):
@@ -354,179 +393,209 @@ def topological_sort(graph : Dict[str : List[str]]):
             in_degree[v] -= 1
             if in_degree[v] == 0:
                 que.append(v)
-    if len(res) == len(graph):
-        return res
-    else:
-        return None # have a cycle
+    return res if len(res) == len(graph) else None # return None if has a cycle
 ```
 
-DFS, 时间复杂度 $O(V + E)$
+##### DFS, 时间复杂度 $O(V + E)$
 
 ```python
-def toposort(graph: list[list[int]]) -> list[int] | None:
-    vis, curr, topo_order, cycle = set(), set(), [], False
-
-    def dfs(node: int) -> None:
-        nonlocal cycle
-        if node in curr:
-            cycle = True
-        if cycle or node in vis:
+def toposort(n, graph):
+    have_cycle, res = False, []
+    state = [0] * n  # 0 : unvisited, 1 : visiting, 2 : visited
+    def dfs(start):
+        nonlocal have_cycle
+        if state[start] == 1:
+            have_cycle = True
+        if have_cycle or state[start] == 2:
             return
-        vis.add(node)
-        curr.add(node)
-        for neighbor in graph[node]:
-            dfs(neighbor)
-        curr.remove(node) # 将由 node 可达的节点探索完后加入 node
-        topo_order.append(node)
-
-    for u in range(len(graph)):
-        if u not in vis:
-            dfs(u)
-
-    return None if cycle else topo_order[::-1]
+        state[start] = 1
+        for neighbour in graph[start]:
+            if state[start] != 2:
+                dfs(neighbour) # 把所有从 start 出发可到达的点放入 res 中
+        state[start] = 2
+        res.append(start) # 然后把 start 也放入 res 中
+    for i in range(n):
+        if state[i] == 0:
+            dfs(i)
+    return res[::-1] if not have_cycle else None
 ```
 
 #### 最短路径
 
-- **Dijkstra**
+##### Dijkstra
 
-  key : 每个点一进一出, 但要求图无负权边
+key : 每个点一进一出, 但要求图无负权边
 
-- **Bellman-Ford** $O(VE)$
+##### Bellman-Ford $O(VE)$
 
-  ```python
-  def bellman_ford(graph, V, source):
-      dist = [float('inf')] * V # 初始化距离
-      dist[source] = 0
-      for _ in range(V - 1): # 松弛 V-1 次
-          for u, v, w in graph:
-              if dist[u] != float('inf') and dist[u] + w < dist[v]:
-                  dist[v] = dist[u] + w
-      for u, v, w in graph: # 检测负权环
-          if dist[u] != float('inf') and dist[u] + w < dist[v]:
-              print("图中存在负权环")
-              return None
-      return dist
-  
-  edges = [(0, 1, 5), (0, 2, 4), (1, 3, 3), (2, 1, 6), (3, 2, -2)] # 图是边列表，每条边是 (起点, 终点, 权重)
-  V, source = 4, 0 # V 总点数, source 起点
-  print(bellman_ford(edges, V, source))
-  ```
+```python
+def bellman_ford(edges, V, source):
+    dist = [float('inf')] * V # 初始化距离
+    dist[source] = 0
+    for _ in range(V - 1): # 松弛 V-1 次
+        for u, v, w in edges:
+            if dist[u] != float('inf') and dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+    for u, v, w in edges: # 检测负权环
+        if dist[u] != float('inf') and dist[u] + w < dist[v]:
+            print("图中存在负权环")
+            return None
+    return dist
 
-- **SPFA**
+edges = [(0, 1, 5), (0, 2, 4), (1, 3, 3), (2, 1, 6), (3, 2, -2)] # 图是边列表，每条边是 (起点, 终点, 权重)
+V, source = 4, 0 # V 总点数, source 起点
+print(bellman_ford(edges, V, source))
+```
 
-  ```python
-  from collections import deque
-  
-  def spfa(adj, V, source):
-      dist = [float('inf')] * V # 初始化距离
-      dist[source] = 0
-      in_queue = [False] * V # 初始化入队状态
-      in_queue[source] = True
-      cnt = [0] * V # 初始化松弛次数
-      queue = deque([source])
-      while queue:
-          u = queue.popleft()
-          in_queue[u] = False # in_queue 相当于存储 set(queue)
-          for v, w in adj[u]:
-              if dist[u] + w < dist[v]:
-                  dist[v] = dist[u] + w
-                  if in_queue[v] == False:
-                      queue.append(v)
-                      in_queue[v] = True
-                      cnt[v] += 1
-                      if cnt[v] > V:
-                          print("图中存在负权环")
-                          return None
-      return dist
-  
-  adj = [[(1, 5), (2, 4)], [(3, 3)], [(1, 6)], [(2, -2)]] # 图的邻接表表示
-  V, source = 4, 0 # V 总点数, source 起点
-  print(spfa(agj, V, source))
-  ```
+##### SPFA
 
-- **Floyd-Warshall **$O(V^3)$, 类似dp
+```python
+def spfa(adj, V, source):
+    dist = [float('inf')] * V # 初始化距离
+    dist[source] = 0
+    in_que = [False] * V # 初始化入队状态
+    in_que[source] = True
+    cnt = [0] * V # 初始化松弛次数
+    que = deque([source])
+    while que:
+        u = que.popleft()
+        in_que[u] = False # in_que 相当于存储 set(que)
+        for v, w in adj[u]:
+            if dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+                if in_que[v] == False:
+                    que.append(v)
+                    in_que[v] = True
+                    cnt[v] += 1
+                    if cnt[v] > V:
+                        print("图中存在负权环")
+                        return None
+    return dist
 
-  ```python
-  def floyd_warshall(graph : Dict):
-      n = len(graph)
-      dist = [[float('inf')] * n for _ in range(n)]
-      for i in range(n):
-          for j in range(n):
-              if i == j:
-                  dist[i][j] = 0
-              elif j in graph[i]:
-                  dist[i][j] = graph[i][j]
-      for k in range(n):
-          for i in range(n):
-              for j in range(n):
-   	           dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
-      return dis
-  ```
+adj = [[(1, 5), (2, 4)], [(3, 3)], [(1, 6)], [(2, -2)]] # 图的邻接表表示
+V, source = 4, 0 # V 总点数, source 起点
+print(spfa(agj, V, source))
+```
+
+##### Floyd-Warshall $O(V^3)$, 类似dp
+
+```python
+def floyd_warshall(n, graph):
+    dist = [[float('inf')] * n for _ in range(n)]
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                dist[i][j] = 0
+            elif j in graph[i]:
+                dist[i][j] = graph[i][j]
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+ 	           dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+    return dis
+```
 
 #### 最小生成树
 
-- **Prim**, $O(V^2)$, 适用于稠密图
+##### Prim, $O(V^2)$, 适用于稠密图
 
-  不断往MST中添加Vertex (greedy思想, 选距离 *现有MST* 权值最小的Vertex)
+不断往MST中添加Vertex (greedy思想, 选距离 *现有MST* 权值最小的Vertex)
 
-  ```python
-  def prim(n, matrix : List[List[int]]):
-      MST, low = set(), [float("inf")] * n # low[k] 表示当前 MST 距离 k 点的最小权值.
-      low[0], tot = 0, 0
-      for _ in range(n):
-          new, MIN = 0, float("inf")
-          for i, dis in enumerate(low):
-               if i not in MST and dis < MIN:
-                  new, MIN = i, dis
-          MST.add(new)
-          tot += MIN
-          for i in range(n):
-              if i not in MST:
-                  low[i] = min(low[i], matrix[i][new]) # 更新新版 MST 距离 k 点的最小权值.
-      return tot
-  ```
+```python
+def prim(n, matrix : List[List[int]]):
+    MST, low = set(), [float("inf")] * n # low[k] 表示当前 MST 距离 k 点的最小权值.
+    low[0], tot = 0, 0
+    for _ in range(n):
+        new, MIN = 0, float("inf")
+        for i, dis in enumerate(low):
+             if i not in MST and dis < MIN:
+                new, MIN = i, dis
+        MST.add(new)
+        tot += MIN
+        for i in range(n):
+            if i not in MST:
+                low[i] = min(low[i], matrix[i][new]) # 更新新版 MST 距离 k 点的最小权值.
+    return tot
+```
 
-- **Kruskal**, $O(E\log E)$
-  
-  ```python
-  class DisjointSet:
-      def __init__(self, num_vertices):
-          self.parent = list(range(num_vertices))
-          self.rank = [0] * num_vertices
-      def find(self, x):
-          if self.parent[x] != x:
-              self.parent[x] = self.find(self.parent[x])
-          return self.parent[x]
-      def union(self, x, y):
-          root_x = self.find(x)
-          root_y = self.find(y)
-          if root_x != root_y:
-              if self.rank[root_x] < self.rank[root_y]:
-   	           self.parent[root_x] = root_y
-              elif self.rank[root_x] > self.rank[root_y]:
-                  self.parent[root_y] = root_x
-              else:
-                  self.parent[root_x] = root_y
-                  self.rank[root_y] += 1
-  
-  def kruskal(graph):
-      num_vertices = len(graph)
-      edges = [] # 构建边集
-      for i in range(num_vertices):
-          for j in range(i + 1, num_vertices):
-              if graph[i][j] != 0:
-                  edges.append((i, j, graph[i][j]))    
-      edges.sort(key=lambda x: x[2]) # 按照权重排序
-      disjoint_set = DisjointSet(num_vertices) # 初始化并查集
-      MST = [] # 构建最小生成树的边集
-      for edge in edges:
-          u, v, weight = edge
-          if disjoint_set.find(u) != disjoint_set.find(v):
-              disjoint_set.union(u, v)
-              MST.append((u, v, weight))
-      return MST
-  ```
+##### Kruskal, $O(E\log E)$
+
+```python
+class DisjointSet:
+    def __init__(self, num_vertices):
+        self.parent = list(range(num_vertices))
+        self.rank = [0] * num_vertices
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    def union(self, x, y):
+        root_x = self.find(x)
+        root_y = self.find(y)
+        if root_x != root_y:
+            if self.rank[root_x] < self.rank[root_y]:
+ 	           self.parent[root_x] = root_y
+            elif self.rank[root_x] > self.rank[root_y]:
+                self.parent[root_y] = root_x
+            else:
+                self.parent[root_x] = root_y
+                self.rank[root_y] += 1
+
+def kruskal(n, graph):
+    edges = [] # 构建边集
+    for i in range(n):
+        for j in range(i + 1, n):
+            if graph[i][j] != 0:
+                edges.append((i, j, graph[i][j]))    
+    edges.sort(key=lambda x: x[2]) # 按照权重排序
+    disjoint_set = DisjointSet(n) # 初始化并查集
+    MST = [] # 构建最小生成树的边集
+    for edge in edges:
+        u, v, weight = edge
+        if disjoint_set.find(u) != disjoint_set.find(v):
+            disjoint_set.union(u, v)
+            MST.append((u, v, weight))
+    return MST
+```
+
+#### 强连通单元 (SCCs)
+
+```python
+def dfs1(graph, node, visited, stack):
+    visited[node] = True
+    for neighbor in graph[node]:
+        if not visited[neighbor]:
+	        dfs1(graph, neighbor, visited, stack)
+    stack.append(node)
+
+def dfs2(graph, node, visited, component):
+    visited[node] = True
+    component.append(node)
+    for neighbor in graph[node]:
+        if not visited[neighbor]:
+            dfs2(graph, neighbor, visited, component)
+
+def kosaraju(n, graph):
+    # Step 1: Perform first DFS to get finishing times
+    stack, visited = [], [False] * n
+    for node in range(n):
+        if not visited[node]:
+        	dfs1(graph, node, visited, stack)
+    # Step 2: Transpose the graph
+    transposed_graph = [[] for _ in range(n)]
+    for node in range(n):
+        for neighbor in graph[node]:
+	        transposed_graph[neighbor].append(node)
+    # Step 3: Perform second DFS on the transposed graph to find SCCs
+    visited, sccs = [False] * n, []
+    while stack:
+        node = stack.pop()
+        if not visited[node]:
+            scc = []
+            dfs2(transposed_graph, node, visited, scc)
+            sccs.append(scc)
+    return sccs
+```
 
 #### 启发式搜索( Warnsdorff )
 
@@ -619,7 +688,7 @@ def kmp_search(text, pattern): # 在 text 中查找 pattern
 
 ---------
 
-##### 强连通 <mark>sorry</mark>
+##### 
 
 ---
 
