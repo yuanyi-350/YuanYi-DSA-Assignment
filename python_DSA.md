@@ -194,28 +194,27 @@ class Solution:
 ##### Merge Sort, [OpenJudge - 07622:求排列的逆序数](http://cs101.openjudge.cn/practice/07622/)
 
 ```python
-def merge_count(arr1, arr2):
-    cnt, j = 0, 0
-    for x in arr1:
-        while j < len(arr2) and arr2[j] < x:
-            j += 1
-        cnt += j
-    res, i, j = [], 0, 0
-    while i < len(arr1) and j < len(arr2):
-        if arr1[i] < arr2[j]:
-            res.append(arr1[i]); i += 1
+def merge_count(left, right):
+    cnt, i, j, res = 0, 0, 0, []
+    while i != len(left) and j != len(right):
+        if left[i] < right[j]:
+            res.append(left[i])
+            i += 1
+            cnt += j
         else:
-            res.append(arr2[j]); j += 1
-    return res + arr1[i:] + arr2[j:], cnt
+            res.append(right[j])
+            j += 1
+    return (cnt + (len(left) - i) * len(right),
+        res + left[i:] + right[j:])
 
 def sortArray(nums):
-    if not nums or len(nums) == 1:
+    if len(nums) in {0, 1}:
         return nums, 0
     mid = len(nums) // 2
-    arr1, sum1 = sortArray(nums[:mid])
-    arr2, sum2 = sortArray(nums[mid:])
-    arr, cnt = merge_count(arr1, arr2)
-    return arr, sum1 + sum2 + cnt
+    left, cnt1 = sortArray(nums[:mid])
+    right, cnt2 = sortArray(nums[mid:])
+    arr, cnt3 = merge_count(left, right)
+    return arr, cnt1 + cnt2 + cnt3
 ```
 
 
