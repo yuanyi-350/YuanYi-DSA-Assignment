@@ -35,6 +35,29 @@
 
 
 
+考前准备清单:
+
+1. pycharm 提前开好六个文件和一个 `input` 文件
+
+2. 开启 `win+v` 剪切板
+
+3. ```python
+   import sys
+   sys.stdin = open("input", "r")
+   ```
+
+4. `int(input())` , `map(int, input().split())` , `for i in range(n)`
+
+5. Tree 模板, DisjointSet 模板包括`parents`
+
+6. 头文件 : `from collections import deque, defaultdict`
+
+   `from typing import List, Dict, Set`
+
+   `from heapq import heappop, heappush, heapify`
+
+   
+
 ## Input and Output
 
 ##### 输入输出
@@ -178,7 +201,7 @@ for i in l:
 ```
 
 ```python
-for index ele in enumerate(num, start = 1)
+for i, val in enumerate(nums, start = 1)
 ```
 
 ##### 排序
