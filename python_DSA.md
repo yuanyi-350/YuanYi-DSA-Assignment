@@ -131,6 +131,16 @@ class Solution(object):
         return res
 ```
 
+## 二分+贪心
+
+通常涉及求解最小化最大值（minMax）或最大化最小值（maxMin）
+
+序列合并 : [OpenJudge - 08210:河中跳房子](http://cs101.openjudge.cn/practice/08210/), [OpenJudge - 04135:月度开销](http://cs101.openjudge.cn/practice/04135) ; 
+
+区间划分 : [OpenJudge - 02774:木材加工](http://cs101.openjudge.cn/practice/02774/), [1760. 袋子里最少数目的球 - 力扣（LeetCode）](https://leetcode.cn/problems/minimum-limit-of-balls-in-a-bag/description/)
+
+[OpenJudge - 02456:Aggressive cows](http://cs101.openjudge.cn/practice/02456)
+
 ## Stack
 
 ##### [中序表达式转后序表达式](http://cs101.openjudge.cn/practice/24591/)
@@ -684,10 +694,4 @@ def kmp_search(text, pattern): # 在 text 中查找 pattern
 ```
 
 
-
----------
-
-##### 
-
----
 
